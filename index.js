@@ -17,7 +17,7 @@ function player_can_move(token, vx, vy) {
 
 
 // requete post /move?token=thetoken&vx=vx&vy=vy
-app.get('/move', function(req, res){
+app.post('/move', function(req, res){
 	if(check_token(req.query.token)){
 		if(player_can_move(req.query.token, parseInt(req.query.vx), parseInt(req.query.vy))) {
 				getUserByToken(req.query.token).position.x += parseInt(req.query.vx); // on update la position du joueur
