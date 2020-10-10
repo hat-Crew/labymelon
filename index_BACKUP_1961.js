@@ -1,6 +1,7 @@
 var express = require('express');
 var md5 = require('md5');
 const app = express();
+
 let users = [];
 
 app.get('/test', function(req, res) {
@@ -58,8 +59,11 @@ function newCoinPosition() {
 newCoinPosition() // définie une nouvelle position de la pièce accessible grâce à coinPosition
 app.get('/getCoin', function(req, res) {
     return res.json({ 'coin': coinPosition });
-});
+})
 
+app.get('/test', function(req, res) {
+	res.send('ceci est un test');
+});
 /**
  * This route allows someone to connect. It creates a user entry and returns a tokens that have to be stored in the client.
  * if the username is already taken, it'll show "Username is already taken"
