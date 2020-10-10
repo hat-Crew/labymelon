@@ -2,9 +2,8 @@ var express = require('express');
 const app = express();
 
 // check si le joueur a avancé d'une case, s'il ne se déplace pas en diagonales et s'il ne va pas sur un mur
-function movePlayer(token, vx, vy) {
+function player_can_move(token, vx, vy) {
 	let currentPos = getUserByToken(token).position;
-	console.log(currentPos.x + vx == currentPos.x+1);
 	if(map[currentPos.x+vx][currentPos.y+vy] == 0) { // check si on est sur un mur ou pas
 		if(currentPos.x + vx == currentPos.x+1 || currentPos.x + vx == currentPos.x-1 || currentPos.x + vx == currentPos.x) {
 			if(currentPos.y + vy == currentPos.y+1 || currentPos.y + vy == currentPos.y-1 || currentPos.y + vy == currentPos.y) {
@@ -20,7 +19,7 @@ function movePlayer(token, vx, vy) {
 // requete post /move?token=thetoken&vx=vx&vy=vy
 app.get('/move', function(req, res){
 	if(check_token(req.query.token)){
-		if(movePlayer(req.query.token, parseInt(req.query.vx), parseInt(req.query.vy))) {
+		if(player_can_move(req.query.token, parseInt(req.query.vx), parseInt(req.query.vy))) {
 				getUserByToken(req.query.token).position.x += parseInt(req.query.vx); // on update la position du joueur
 				getUserByToken(req.query.token).position.y += parseInt(req.query.vy);
 				res.send('ok');
