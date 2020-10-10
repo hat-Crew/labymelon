@@ -8,7 +8,7 @@ let mapSize = {
 
 let map;
 
-async function getMap(ms){
+function getMap(ms){
     let map = []
 
     for (let i = 0; i < ms.x; i++){
