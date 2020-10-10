@@ -13,7 +13,7 @@ let users = [];
  *	 param: username
  * Example: /auth?username=usernamehere
  */
-app.get('/auth', function(req, res) {
+app.post('/auth', function(req, res) {
 	if(req.query.username !== undefined) {
 		if(getUserByName(req.query.username) === undefined) {
 			let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
