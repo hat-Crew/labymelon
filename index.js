@@ -13,6 +13,7 @@ var available_points = Array()
 var x = 0
 var y = 0
 var coinIndex;
+var coinPosition;
 matrice.forEach(function(line) {
     x = 0
     line.forEach(function(ele) {
@@ -23,14 +24,15 @@ matrice.forEach(function(line) {
     })
     y++
 })
-coinIndex = Math.round(Math.random() * available_points.length)
 
-app.get('/newCoin', function(req, res) {
+function newCoinPosition() {
     coinIndex = Math.round(Math.random() * (available_points.length - 1))
-    return res.json({ 'coin': { 'x': available_points[coinIndex][0], 'y': available_points[coinIndex][1] } });
-})
+    coinPosition = { 'x': available_points[coinIndex][0], 'y': available_points[coinIndex][1] }
+}
+
+newCoinPosition() // définie une nouvelle position de la pièce accessible grâce à coinPosition
 app.get('/getCoin', function(req, res) {
-    return res.json({ 'coin': { 'index': available_points.length, 'x': available_points[coinIndex][0], 'y': available_points[coinIndex][1] } });
+    return res.json({ 'coin': coinPosition });
 })
 
 app.get('/test', function(req, res) {
