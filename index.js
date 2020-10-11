@@ -215,3 +215,12 @@ function getCoin(winner) {
     winner.score++
         newCoinPosition()
 }
+
+
+//kick un joueur s'il n'a pas joué durant les 120 dernières secondes
+setInterval(function (){
+    users.forEach(function(user, user_index, user_object) {
+        if(user.timestamp <= Date.now()-1000)
+            user_object.splice(user_index, 1);
+    });
+}, 100)
