@@ -76,8 +76,8 @@ function generatePath(map){
 
 function cleanMap(map){
 
-    for (i = 1; i < ms.x - 1; i++){ //cycling through all slots
-        for (j = 1; j < ms.y - 1; j++){ 
+    for (i = 2; i < ms.x - 1; i+=2){ //cycling through all slots
+        for (j = 2; j < ms.y - 1; j+=2){ 
             checkFor = (map[i][j]); // we will look for same element as the current element in its surrounding
             found = false;
 
@@ -92,8 +92,41 @@ function cleanMap(map){
             if (!found){ //if no element has been found
                 map[i][j] = (map[i][j]) ? 0 : 1; //invert the middle element, to match its surroundings
             }
+
+            if ((i - 2) % 4 == 0 && (j - 2) % 4 == 0){ //Ever 4 blocks
+                nbOfOpenings = 0; //here we will count the number of opening a room has
+
+                bufCord = { //this will be used to close an opening if needed
+                    x: 0,
+                    y: 0
+                }
+
+                for (k = 0; k < 5 && nbOfOpenings < 2; k++){ //we cycle through the room, we only want to keep rooms with at least 2 openings, to avoid closed areas
+                    for (l = 0; l < 5 && nbOfOpenings < 2; l++){
+
+                        if (k == 0 || k == 4 || l == 0 || l == 4){ // we only want to test the walls of the room
+                            if (map[i + k - 2][j + l - 2] == 0){ // if the room is opened
+                                nbOfOpenings++ // add one opening
+                                bufCord.x = i + k - 2; //save the coords of it to close it if needed
+                                bufCord.y = j + l - 2;
+                            }
+                        }
+                    }
+                }
+
+                if (nbOfOpenings < 2){ // if theres it only 1 or no openings
+                    for (k = 1; k <= 3; k ++){
+                        for (l = 1; l <= 3; l ++){
+                            map[i + k - 2][j + l - 2] = 1; //we fill the room
+                            
+                        }
+                    }
+                    map[bufCord.x][bufCord.y] = 1; //we close the opening if there is one
+                }
+            }
         }
     }
+
     return map;
 }
 
