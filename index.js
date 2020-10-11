@@ -186,3 +186,18 @@ app.post('/move', function(req, res) {
     } else
         res.json('you need to specify a valid token');
 });
+
+// requete post /all?token=thetoken
+// return : piece position and all players positions
+app.post('/all', function(req, res){
+    if (check_token(req.body.token)) {
+        let allPlayers = {};
+
+        users.forEach(function(user){
+            allPlayers[user.username] = { position:user.position, score:user.score }
+        });
+
+        res.json({ coin:coinPosition, players:allPlayers });
+    } else
+        res.json('you need to specify a valid token');
+});
