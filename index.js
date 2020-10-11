@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(express.urlencoded({
-	extended: true
+    extended: true
 }));
 
 app.use(cors());
@@ -82,7 +82,7 @@ app.post('/auth', function(req, res) {
             let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
             let user = new User(token, req.body.username);
             users.push(user);
-			res.json(token);
+            res.json(token);
         } else
             res.json("Username is already taken");
     } else
@@ -176,9 +176,9 @@ app.post('/move', function(req, res) {
     if (check_token(req.body.token)) {
         if (player_can_move(req.body.token, parseInt(req.body.vx), parseInt(req.body.vy))) {
             getUserByToken(req.body.token).position.x += parseInt(req.body.vx); // on update la position du joueur
-			getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
-			if(getUserByToken(req.body.token).position.x == coinPosition.x && getUserByToken(req.body.token).position.y == coinPosition.y)
-				getCoin(getUserByToken(req.body.token));
+            getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
+            if (getUserByToken(req.body.token).position.x == coinPosition.x && getUserByToken(req.body.token).position.y == coinPosition.y)
+                getCoin(getUserByToken(req.body.token));
             res.json('moved');
         } else {
             res.json('you can\'t move');
@@ -186,3 +186,8 @@ app.post('/move', function(req, res) {
     } else
         res.json('you need to specify a valid token');
 });
+
+function getCoin(winner) {
+    winner.score++
+        newCoinPosition()
+}
