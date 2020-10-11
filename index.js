@@ -179,7 +179,7 @@ app.post('/move', function(req, res) {
 			getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
 			if(getUserByToken(req.body.token).position.x == coinPosition.x && getUserByToken(req.body.token).position.y == coinPosition.y)
 				getCoin(getUserByToken(req.body.token));
-            res.json('ok');
+            res.json('moved');
         } else {
             res.json('you can\'t move');
         }
