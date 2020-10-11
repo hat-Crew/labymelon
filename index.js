@@ -1,6 +1,15 @@
 var express = require('express');
-var md5 = require('md5');
+const cors = require('cors');
 const app = express();
+
+app.use(express.urlencoded({
+	extended: true
+}));
+
+app.use(cors());
+app.options('*', cors());
+
+var md5 = require('md5');
 let users = [];
 
 
@@ -68,16 +77,17 @@ app.post('/getCoin', function(req, res) {
  * Example: /auth?username=usernamehere
  */
 app.post('/auth', function(req, res) {
-    if (req.query.username !== undefined) {
-        if (getUserByName(req.query.username) === undefined) {
+	console.log(req.body);
+    if (req.body.username != undefined) {
+        if (getUserByName(req.body.username) == undefined) {
             let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
-            let user = new User(token, req.query.username);
+            let user = new User(token, req.body.username);
             users.push(user);
-            res.send(token);
+			res.json(token);
         } else
-            res.send("Username is already taken");
+            res.json("Username is already taken");
     } else
-        res.send("Invalid request");
+        res.json("Invalid request");
 });
 
 /**
@@ -164,14 +174,14 @@ function player_can_move(token, vx, vy) {
 
 // requete post /move?token=thetoken&vx=vx&vy=vy
 app.post('/move', function(req, res) {
-    if (check_token(req.query.token)) {
-        if (player_can_move(req.query.token, parseInt(req.query.vx), parseInt(req.query.vy))) {
-            getUserByToken(req.query.token).position.x += parseInt(req.query.vx); // on update la position du joueur
-            getUserByToken(req.query.token).position.y += parseInt(req.query.vy);
-            res.send('ok');
+    if (check_token(req.body.token)) {
+        if (player_can_move(req.body.token, parseInt(req.body.vx), parseInt(req.body.vy))) {
+            getUserByToken(req.body.token).position.x += parseInt(req.body.vx); // on update la position du joueur
+            getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
+            res.json('ok');
         } else {
-            res.send('you can\'t move');
+            res.json('you can\'t move');
         }
     } else
-        res.send('you need to specify a valid token');
+        res.json('you need to specify a valid token');
 });
