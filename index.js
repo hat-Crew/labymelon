@@ -8,6 +8,7 @@ app.use(express.urlencoded({
 
 app.use(cors());
 app.options('*', cors());
+app.listen(3000);
 
 var md5 = require('md5');
 let users = [];
@@ -114,7 +115,6 @@ setInterval(function() {
 }, 3600000);
 
 
-app.listen(3000);
 
 class User {
     constructor(token, username) {
@@ -180,7 +180,7 @@ function player_can_move(token, vx, vy) {
 // requete post /move?token=thetoken&vx=vx&vy=vy
 app.post('/move', function(req, res) {
     if (check_token(req.body.token)) {
-        if (getUserByToken(req.body.token).timestamp <= Date.now()-90 && player_can_move(req.body.token, parseInt(req.body.vx), parseInt(req.body.vy))) {
+        if (getUserByToken(req.body.token).timestamp <= Date.now() - 90 && player_can_move(req.body.token, parseInt(req.body.vx), parseInt(req.body.vy))) {
             getUserByToken(req.body.token).timestamp = Date.now();
             getUserByToken(req.body.token).position.x += parseInt(req.body.vx); // on update la position du joueur
             getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
