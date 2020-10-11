@@ -120,7 +120,7 @@ class User {
     constructor(token, username) {
         this.token = token;
         this.username = username;
-        this.position = { x: 0, y: 0 };
+        this.position = { x: 1, y: 1 };
         this.score = 0;
         this.timestamp = Date.now();
     }
@@ -165,7 +165,7 @@ function check_token(token) {
 // check si le joueur a avancé d'une case, s'il ne se déplace pas en diagonales et s'il ne va pas sur un mur
 function player_can_move(token, vx, vy) {
     let currentPos = getUserByToken(token).position;
-    if (map[currentPos.x + vx][currentPos.y + vy] == 0) { // check si on est sur un mur ou pas
+    if (map[currentPos.y + vy][currentPos.x + vx] == 0) { // check si on est sur un mur ou pas
         if (currentPos.x + vx == currentPos.x + 1 || currentPos.x + vx == currentPos.x - 1 || currentPos.x + vx == currentPos.x) {
             if (currentPos.y + vy == currentPos.y + 1 || currentPos.y + vy == currentPos.y - 1 || currentPos.y + vy == currentPos.y) {
                 if (vx + vy < 2 && vx + vy > -2) // évite de se déplacer en diagonales
@@ -197,10 +197,12 @@ app.post('/move', function(req, res) {
 // return : piece position and all players positions
 app.post('/all', function(req, res) {
     if (check_token(req.body.token)) {
-        let allPlayers = {};
+        // let allPlayers = {};
+        let allPlayers = [];
 
         users.forEach(function(user) {
-            allPlayers[user.username] = { position: user.position, score: user.score }
+            // allPlayers[user.username] = { position: user.position, score: user.score }
+            allPlayers.push([user.username, user.position, user.score]);
         });
 
         res.json({ coin: coinPosition, players: allPlayers });
