@@ -2,9 +2,7 @@ var express = require('express');
 const cors = require('cors');
 const app = express();
 
-<<
-<<
-<< < HEAD
+
 app.use(express.urlencoded({
     extended: true
 }));
@@ -19,17 +17,13 @@ let users = [];
 
 
 let mapSize = {
-        x: 50,
-        y: 100
-    } ===
-    ===
-    =
-    let ms = {
-        x: 49,
-        y: 101
-    }; >>>
->>>
-> feature / get_random_maze
+    x: 50,
+    y: 100
+}
+let ms = {
+    x: 49,
+    y: 101
+};
 
 let map;
 let nbOfPaths;
