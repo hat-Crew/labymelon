@@ -77,7 +77,6 @@ app.post('/getCoin', function(req, res) {
  * Example: /auth?username=usernamehere
  */
 app.post('/auth', function(req, res) {
-	console.log(req.body);
     if (req.body.username != undefined) {
         if (getUserByName(req.body.username) == undefined) {
             let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
