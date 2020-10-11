@@ -37,7 +37,10 @@ function getMap(ms) {
 map = getMap(mapSize);
 
 app.post('/maze', function(req, res) {
-    res.json(map);
+    if (check_token(req.body.token)) {
+        res.json(map);
+    } else
+        res.json('you need to specify a valid token');
 });
 
 
@@ -64,7 +67,10 @@ function newCoinPosition() {
 
 newCoinPosition() // définie une nouvelle position de la pièce accessible grâce à coinPosition.x et coinPosition.y
 app.post('/getCoin', function(req, res) {
-    return res.json({ 'coin': coinPosition });
+    if (check_token(req.body.token)) {
+        return res.json({ 'coin': coinPosition });
+    } else
+        res.json('you need to specify a valid token');
 });
 
 /**
