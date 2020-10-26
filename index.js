@@ -1,20 +1,40 @@
-var express = require('express');
-const cors = require('cors');
-const app = express();
-
-
-app.use(express.urlencoded({
-    extended: true
-}));
-
-app.use(cors());
-app.options('*', cors());
-app.listen(3000);
-
 var md5 = require('md5');
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 25565 });
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        switch (message.split(' ')[0]) {
+            
+            // requete ws : auth username=value
+            case 'auth':
+                if(message.split(' ').length == 2)
+                    auth(message.split(' '), ws);
+            break;
+
+            // requete ws : maze token=value
+            case 'maze':
+                if(message.split(' ').length == 2)
+                    maze(message.split(' '), ws);
+            break;
+
+            //requete ws : move token=value vx=value vy=value
+            case 'move':
+                if(message.split(' ').length == 4)
+                    move(message.split(' '), ws);
+            break;
+            
+            //requete ws : all token=value
+            case 'all':
+                if(message.split(' ').length == 2)
+                    all(message.split(' '), ws);
+            break;
+        }
+    });
+});
+
 let users = [];
-
-
 
 let mapSize = {
     x: 50,
@@ -24,6 +44,7 @@ let ms = {
     x: 49,
     y: 101
 };
+
 
 let map;
 let nbOfPaths;
@@ -179,12 +200,14 @@ function generateRandomMap() {
 };
 
 map = generateRandomMap();
-app.post('/maze', function(req, res) {
-    if (check_token(req.body.token)) {
-        res.json(map);
+
+function maze(req, res) {
+    let token = req[1].split('=')[1];
+    if (check_token(token)) {
+        res.send('map: '+JSON.stringify(map));
     } else
-        res.json('you need to specify a valid token');
-});
+        res.send('error: you need to specify a valid token');
+}
 
 
 
@@ -210,12 +233,6 @@ function newCoinPosition() {
 }
 
 newCoinPosition() // définie une nouvelle position de la pièce accessible grâce à coinPosition.x et coinPosition.y
-app.post('/getCoin', function(req, res) {
-    if (check_token(req.body.token)) {
-        return res.json({ 'coin': coinPosition });
-    } else
-        res.json('you need to specify a valid token');
-});
 
 /**
  * This route allows someone to connect. It creates a user entry and returns a tokens that have to be stored in the client.
@@ -226,44 +243,27 @@ app.post('/getCoin', function(req, res) {
  *	 param: username
  * Example: /auth?username=usernamehere
  */
-app.post('/auth', function(req, res) {
-    if (req.body.username != undefined) {
-        if (getUserByName(req.body.username) == undefined) {
-            let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
-            let user = new User(token, req.body.username);
-            users.push(user);
-            res.json(token);
+function auth(req, res) {
+    if(req[1].includes('=')){
+        let username = req[1].split('=')[1];
+        if (username != undefined) {
+            if (getUserByName(username) == undefined) {
+                let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
+                let user = new User(token, username);
+                users.push(user);
+                res.send('token: '+token);
+            } else
+                res.send("error: Username is already taken");
         } else
-            res.json("Username is already taken");
-    } else
-        res.json("Invalid request");
-});
-
-/**
- * Deletes users that have been stored in users array for at least 1 hour
- */
-setInterval(function() {
-    let arraypos = 0;
-    let newarray = [];
-    users.forEach(function(user) {
-        if ((user.timestamp + 3600) <= Date.now()) {
-            delete users[arraypos];
-        } else {
-            newarray.push(user);
-        }
-        arraypos++;
-    });
-    //I need to redefine users array here or it'll keep a memory slot.
-    users = newarray;
-}, 3600000);
-
-
+            res.send("error: Invalid request");
+    }
+}
 
 class User {
     constructor(token, username) {
         this.token = token;
         this.username = username;
-        this.position = { x: 1, y: 1 };
+        this.position = { x: available_points[0][0], y: available_points[0][1] };
         this.score = 0;
         this.timestamp = Date.now();
     }
@@ -321,38 +321,47 @@ function player_can_move(token, vx, vy) {
 
 
 // requete post /move?token=thetoken&vx=vx&vy=vy
-app.post('/move', function(req, res) {
-    if (check_token(req.body.token)) {
-        if (getUserByToken(req.body.token).timestamp <= Date.now() - 90 && player_can_move(req.body.token, parseInt(req.body.vx), parseInt(req.body.vy))) {
-            getUserByToken(req.body.token).timestamp = Date.now();
-            getUserByToken(req.body.token).position.x += parseInt(req.body.vx); // on update la position du joueur
-            getUserByToken(req.body.token).position.y += parseInt(req.body.vy);
-            if (getUserByToken(req.body.token).position.x == coinPosition.x && getUserByToken(req.body.token).position.y == coinPosition.y)
-                getCoin(getUserByToken(req.body.token));
-            res.json('moved');
-        } else {
-            res.json('you can\'t move');
-        }
-    } else
-        res.json('you need to specify a valid token');
-});
+function move(req, res) {
+    if(req[1].includes('=') && req[2].includes('=') && req[3].includes('=')) {
+        token = req[1].split('=')[1];
+        vx = req[2].split('=')[1];
+        vy = req[3].split('=')[1];
+    
+        if (check_token(token)) {
+            if (getUserByToken(token).timestamp <= Date.now() - 90 && player_can_move(token, parseInt(vx), parseInt(vy))) {
+                getUserByToken(token).timestamp = Date.now();
+                getUserByToken(token).position.x += parseInt(vx); // on update la position du joueur
+                getUserByToken(token).position.y += parseInt(vy);
+                if (getUserByToken(token).position.x == coinPosition.x && getUserByToken(token).position.y == coinPosition.y)
+                    getCoin(getUserByToken(token));
+                res.send('moved');
+            } else {
+                res.send('error: you can\'t move');
+            }
+        } else
+            res.send('error: you need to specify a valid token');
+    }
+}
 
 // requete post /all?token=thetoken
 // return : piece position and all players positions
-app.post('/all', function(req, res) {
-    if (check_token(req.body.token)) {
-        // let allPlayers = {};
-        let allPlayers = [];
-
-        users.forEach(function(user) {
-            // allPlayers[user.username] = { position: user.position, score: user.score }
-            allPlayers.push([user.username, user.position, user.score]);
-        });
-
-        res.json({ coin: coinPosition, players: allPlayers });
-    } else
-        res.json('you need to specify a valid token');
-});
+function all(req, res) {
+    if(req[1].includes('=')) { 
+        token = req[1].split('=')[1];
+        if (check_token(token)) {
+            // let allPlayers = {};
+            let allPlayers = [];
+    
+            users.forEach(function(user) {
+                // allPlayers[user.username] = { position: user.position, score: user.score }
+                allPlayers.push([user.username, user.position, user.score]);
+            });
+    
+            res.send('players: '+JSON.stringify({ coin: coinPosition, players: allPlayers }));
+        } else
+            res.send('error: you need to specify a valid token');
+    }
+}
 
 function getCoin(winner) {
     winner.score++
@@ -360,10 +369,10 @@ function getCoin(winner) {
 }
 
 
-//kick un joueur s'il n'a pas joué durant les 120 dernières secondes
-setInterval(function() {
-    users.forEach(function(user, user_index, user_object) {
-        if (user.timestamp <= Date.now() - 1000)
-            user_object.splice(user_index, 1);
-    });
-}, 100)
+// //kick un joueur s'il n'a pas joué durant les 120 dernières secondes
+// setInterval(function() {
+//     users.forEach(function(user, user_index, user_object) {
+//         if (user.timestamp <= Date.now() - 10000)
+//             user_object.splice(user_index, 1);
+//     });
+// }, 100)
