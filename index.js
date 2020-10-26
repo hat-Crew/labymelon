@@ -3,6 +3,14 @@ var md5 = require('md5');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 25565 });
 
+
+/* 
+How to make a ws request (client side) :
+
+1) connect to the ws server : var ws = new WebSocket("ws://146.59.146.53:25565");
+2) listen for server messages : ws.onmessage = function (event) { console.log(event.data); };
+3) send ws request : ws.send('auth username=test'); (this example request trigger l.19 on this file)
+*/
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         switch (message.split(' ')[0]) {
