@@ -1,25 +1,23 @@
 module.exports = function() {
-    let mapSize = {
+    var mapSize = {
         x: 50,
         y: 100
     }
-    let ms = {
+    var ms = {
         x: 49,
         y: 101
     };
     
-    
-    let map;
-    let nbOfPaths;
-    let nbNewPaths;
-    let unusedPath;
-    let path;
-    let checkFor;
-    let found;
+    var nbOfPaths;
+    var nbNewPaths;
+    var unusedPath;
+    var path;
+    var checkFor;
+    var found;
     
     
     
-    function generateRawMap(map) {
+    this.generateRawMap = function(map) {
         for (let i = 0; i < ms.x; i++) {
             map.push([])
             for (let j = 0; j < ms.y; j++) {
@@ -29,7 +27,7 @@ module.exports = function() {
         return map;
     };
     
-    function generatePath(map) {
+    this.generatePath = function(map) {
         for (k = 1; k < ms.x - 1; k++) {
             for (l = 1; l < ms.y - 1; l++) {
                 if (!(k % 4) && !(l % 4)) {
@@ -97,7 +95,7 @@ module.exports = function() {
         return map;
     };
     
-    function cleanMap(map) {
+    this.cleanMap = function(map) {
     
         for (i = 2; i < ms.x - 1; i += 2) { //cycling through all slots
             for (j = 2; j < ms.y - 1; j += 2) {
@@ -154,7 +152,7 @@ module.exports = function() {
     };
     
     
-    function generateRandomMap() {
+    this.generateRandomMap = function() {
         map = []; //empty map
         map = generateRawMap(map); //this will generate a map with all walls filled
         map = generatePath(map); //this will generate all paths
@@ -162,13 +160,14 @@ module.exports = function() {
         return map;
     };
     
-    map = generateRandomMap();
     
-    function maze(req, res) {
+    this.maze = function(req, res) {
         let token = req[1].split('=')[1];
         if (check_token(token)) {
             res.send('map: '+JSON.stringify(map));
         } else
-            res.send('error: you need to specify a valid token');
+        res.send('error: you need to specify a valid token');
     }
+    map = generateRandomMap();
+    
 }

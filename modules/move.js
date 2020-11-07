@@ -1,6 +1,6 @@
 module.exports = function() {
     // check si le joueur a avancé d'une case, s'il ne se déplace pas en diagonales et s'il ne va pas sur un mur
-    function player_can_move(token, vx, vy) {
+    this.player_can_move = function(token, vx, vy) {
         let currentPos = getUserByToken(token).position;
         if (map[currentPos.y + vy][currentPos.x + vx] == 0) { // check si on est sur un mur ou pas
             if (currentPos.x + vx == currentPos.x + 1 || currentPos.x + vx == currentPos.x - 1 || currentPos.x + vx == currentPos.x) {
@@ -15,7 +15,7 @@ module.exports = function() {
 
 
     // requete post /move?token=thetoken&vx=vx&vy=vy
-    function move(req, res) {
+    this.move = function(req, res) {
         if(req[1].includes('=') && req[2].includes('=') && req[3].includes('=')) {
             token = req[1].split('=')[1];
             vx = req[2].split('=')[1];

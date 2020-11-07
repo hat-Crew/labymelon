@@ -1,6 +1,8 @@
+var md5 = require('md5');
+
 module.exports = function() {
 
-    let users = [];
+    users = [];
 
     /**
      * This route allows someone to connect. It creates a user entry and returns a tokens that have to be stored in the client.
@@ -11,7 +13,7 @@ module.exports = function() {
     *	 param: username
     * Example: /auth?username=usernamehere
     */
-    function auth(req, res) {
+    this.auth = function(req, res) {
         if(req[1].includes('=')){
             let username = req[1].split('=')[1];
             if (username != undefined) {
@@ -25,13 +27,14 @@ module.exports = function() {
             } else
                 res.send("error: Invalid request");
         }
+        console.log(users);
     }
 
     class User {
         constructor(token, username) {
             this.token = token;
             this.username = username;
-            this.position = { x: available_points[0][0], y: available_points[0][1] };
+            this.position = { x: available_points[0][0], y: available_points[0][0] };
             this.score = 0;
             this.timestamp = Date.now();
         }
@@ -41,7 +44,7 @@ module.exports = function() {
      Returns a specific User(object) by a specified token.
     if no User is found, returns undefined.
     */
-    function getUserByToken(token) {
+    this.getUserByToken = function(token) {
         let val = undefined;
         users.forEach(function(user) {
             if (user.token === token) {
@@ -55,7 +58,7 @@ module.exports = function() {
      Returns a specific User(object) by a specified name.
     if no User is found, returns undefined.
     */
-    function getUserByName(username) {
+    this.getUserByName = function(username) {
         let val = undefined;
         users.forEach(function(user) {
             if (user.username === username) {
@@ -69,7 +72,7 @@ module.exports = function() {
      Returns true if the token is found
     returns false if not.
     */
-    function check_token(token) {
+    this.check_token = function(token) {
         return getUserByToken(token) !== undefined;
     }
 }

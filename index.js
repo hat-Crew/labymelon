@@ -1,14 +1,13 @@
-var md5 = require('md5');
+var WebSocket = require('ws');
+var wss = new WebSocket.Server({ port: 25565 });
 
-require('./modules/auth.js');
-require('./modules/maze.js');
-require('./modules/coin.js');
-require('./modules/move.js');
-require('./modules/all.js');
+require('./modules/globalVariables.js')();
 
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 25565 });
-
+require('./modules/auth.js')();
+require('./modules/maze.js')();
+require('./modules/move.js')();
+require('./modules/all.js')();
+require('./modules/coin.js')();
 
 /* 
 How to make a ws request (client side) :
@@ -47,7 +46,6 @@ wss.on('connection', function connection(ws) {
         }
     });
 });
-
 
 // //kick un joueur s'il n'a pas joué durant les 120 dernières secondes
 // setInterval(function() {

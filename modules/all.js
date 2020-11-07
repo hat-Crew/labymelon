@@ -1,7 +1,7 @@
 module.exports = function() {
     // requete post /all?token=thetoken
     // return : piece position and all players positions
-    function all(req, res) {
+    this.all = function(req, res) {
         if(req[1].includes('=')) { 
             token = req[1].split('=')[1];
             if (check_token(token)) {
