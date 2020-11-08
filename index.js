@@ -24,24 +24,36 @@ wss.on('connection', function connection(ws) {
             case 'auth':
                 if(message.split(' ').length == 2)
                     auth(message.split(' '), ws);
+                else
+                    ws.send('error: auth needs 1 argument !');
             break;
 
             // requete ws : maze token=value
             case 'maze':
                 if(message.split(' ').length == 2)
                     maze(message.split(' '), ws);
+                else
+                    ws.send('error: maze needs 1 argument !');
             break;
 
             //requete ws : move token=value vx=value vy=value
             case 'move':
                 if(message.split(' ').length == 4)
                     move(message.split(' '), ws);
+                else
+                    ws.send('error: move needs 3 arguments !');
             break;
             
             //requete ws : all token=value
             case 'all':
                 if(message.split(' ').length == 2)
                     all(message.split(' '), ws);
+                else
+                    ws.send('error: all needs 1 argument !');
+            break;
+
+            default:
+                ws.send('error: command not found !');
             break;
         }
     });
