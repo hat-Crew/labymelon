@@ -20,20 +20,27 @@ module.exports = function() {
             token = req[1].split('=')[1];
             vx = req[2].split('=')[1];
             vy = req[3].split('=')[1];
-        
-            if (check_token(token)) {
-                if (getUserByToken(token).timestamp <= Date.now() - 90 && player_can_move(token, parseInt(vx), parseInt(vy))) {
-                    getUserByToken(token).timestamp = Date.now();
-                    getUserByToken(token).position.x += parseInt(vx); // on update la position du joueur
-                    getUserByToken(token).position.y += parseInt(vy);
-                    if (getUserByToken(token).position.x == coinPosition.x && getUserByToken(token).position.y == coinPosition.y)
-                        getCoin(getUserByToken(token));
-                    res.send('moved');
+
+            let vectors = [-1, 0, 1, '-1', '0', '1'];
+
+            if(vectors.includes(vx) && vectors.includes(vy)) {
+                if (check_token(token)) {
+                    if (getUserByToken(token).timestamp <= Date.now() - 90 && player_can_move(token, parseInt(vx), parseInt(vy))) {
+                        getUserByToken(token).timestamp = Date.now();
+                        getUserByToken(token).position.x += parseInt(vx); // on update la position du joueur
+                        getUserByToken(token).position.y += parseInt(vy);
+                        if (getUserByToken(token).position.x == coinPosition.x && getUserByToken(token).position.y == coinPosition.y)
+                            getCoin(getUserByToken(token));
+                        res.send('moved');
+                    } else {
+                        res.send('error: you can\'t move !');
+                    }
                 } else {
-                    res.send('error: you can\'t move');
+                    res.send('error: you need to specify a valid token !');
                 }
-            } else
-                res.send('error: you need to specify a valid token');
+            } else {
+                res.send('error: move parameters must be numbers between -1 and 1 !');
+            }
         }
     }
 }
