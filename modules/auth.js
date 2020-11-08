@@ -16,16 +16,16 @@ module.exports = function() {
     this.auth = function(req, res) {
         if(req[1].includes('=')){
             let username = req[1].split('=')[1];
-            if (username != undefined) {
+            if (username != undefined && username != "") {
                 if (getUserByName(username) == undefined) {
                     let token = md5((Math.random() * 10 + '' + Date.now()).slice(2) + '' + Date.now());
                     let user = new User(token, username);
                     users.push(user);
                     res.send('token: '+token);
                 } else
-                    res.send("error: Username is already taken");
+                    res.send("error: username is already taken !");
             } else
-                res.send("error: Invalid request");
+                res.send("error: username cannot be empty !");
         }
         console.log(users);
     }
